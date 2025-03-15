@@ -1,4 +1,10 @@
 import { Player } from "../types";
+import Rohit_Sharma from "../assets/players/rohit_sharma.png";
+import Rohit_Right_Position_Image from "../assets/images/rohit_position_right.png";
+import Rohit_Right_Position_Image_Last_Frame from "../assets/images/right_side_rohit_last_frame.png";
+import Jasprit_Bumrah from "../assets/players/jasprit_bumrah.png";
+import Jaspreet_Left_Position_Image from "../assets/images/jaspreet_position_left.png";
+import Jaspreet_Left_Position_Image_Last_Frame from "../assets/images/left_side_jaspret_last_frame.png";
 
 export const players: Player[] = [
   {
@@ -34,7 +40,9 @@ export const players: Player[] = [
   {
     id: 7,
     name: "Jasprit Bumrah",
-    image: "https://www.mumbaiindians.com/static-assets/images/players/large/63755.png"
+    image: Jasprit_Bumrah,
+    left_image: Jaspreet_Left_Position_Image,
+    left_image_last_frame: Jaspreet_Left_Position_Image_Last_Frame
   },
   {
     id: 8,
@@ -69,7 +77,9 @@ export const players: Player[] = [
   {
     id: 14,
     name: "Rohit Sharma",
-    image: "https://www.mumbaiindians.com/static-assets/images/players/large/3852.png"
+    image: Rohit_Sharma,
+    right_image: Rohit_Right_Position_Image,
+    right_image_last_frame: Rohit_Right_Position_Image_Last_Frame
   },
   {
     id: 15,

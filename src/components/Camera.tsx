@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef, useEffect } from 'react';
 import { Camera as CameraIcon, ArrowLeft, Download } from 'lucide-react';
 import { saveAs } from 'file-saver';
@@ -10,6 +9,10 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  // Extract left and right avatars
+  const leftAvatar = selectedAvatars.find((avatar) => avatar.left_image);
+  const rightAvatar = selectedAvatars.find((avatar) => avatar.right_image);
+
   useEffect(() => {
     const startCamera = async () => {
       try {
@@ -17,7 +20,7 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
           video: { facingMode: 'user' },
           audio: false,
         });
-        
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
@@ -42,7 +45,7 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
     if (!context) return;
 
     // Set canvas dimensions to match video
@@ -55,52 +58,66 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
     context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
     context.restore();
 
-    // Load and draw avatar images
-    const loadImages = selectedAvatars.map((avatar) => {
+    // Helper function to load an image
+    const loadImage = (src: string | null): Promise<HTMLImageElement | null> => {
       return new Promise((resolve) => {
+        if (!src) return resolve(null);
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = () => resolve(img);
-        img.src = avatar.image;
+        img.src = src;
       });
-    });
+    };
 
-    Promise.all(loadImages).then((images) => {
-      images.forEach((img: any, index) => {
-        const size = canvas.height * 0.2; // Slightly smaller avatars
-        const spacing = size * 0.2;
-        
-        // Position avatars at bottom corners
-        const y = canvas.height - size - spacing;
-        const x = index === 0 
-          ? spacing // Left corner
-          : canvas.width - size - spacing; // Right corner
-        
-        // Draw circular avatar
-        context.save();
-        context.beginPath();
-        context.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2, true);
-        context.closePath();
-        context.clip();
-        
-        context.drawImage(img, x, y, size, size);
-        
-        // Draw avatar border
-        context.strokeStyle = 'white';
-        context.lineWidth = 4;
-        context.stroke();
-        
-        context.restore();
-      });
+    const processAvatars = async () => {
+      try {
+        const [leftImage, rightImage] = await Promise.all([
+          loadImage(leftAvatar?.left_image_last_frame ?? null),
+          loadImage(rightAvatar?.right_image_last_frame ?? null),
+        ]);
+    
+        const avatarHeight = canvas.height * 0.6;
+        const avatarWidth = avatarHeight * 0.8;
+    
+        console.log("Left Image:", leftImage);
+        console.log("Right Image:", rightImage);
+    
+        if (leftImage) {
+          context.save();
+          context.translate(avatarHeight, 0);
+          context.rotate(90 * Math.PI / 180);
+          context.drawImage(leftImage, 0, 0, avatarWidth, avatarHeight);
+          context.restore();
+        }
+    
+        if (rightImage) {
+          context.save();
+          // Move to the bottom-left corner
+          context.translate(avatarWidth, canvas.height);
+          // Rotate -90 degrees
+          context.rotate(-90 * Math.PI / 180);
+          // Draw the image at (0, -avatarHeight) so it aligns correctly
+          context.drawImage(rightImage, 0, -avatarHeight, avatarWidth, avatarHeight);
+          context.restore();
+        } 
+    
+        // Save the final image
+        const finalImage = canvas.toDataURL("image/jpeg");
+        setCapturedImage(finalImage);
+        onCapture(finalImage);
+      } catch (error) {
+        console.error("Error processing avatars:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      setCapturedImage(canvas.toDataURL('image/jpeg'));
-      setIsLoading(false);
-    });
+    processAvatars();
   };
 
   const savePhoto = () => {
     if (!canvasRef.current) return;
-    
+
     canvasRef.current.toBlob(blob => {
       if (blob) {
         saveAs(blob, 'selfie-with-avatars.jpg');
@@ -113,7 +130,7 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen max-h-[80dvh] bg-black flex flex-col">
       <div className="p-4 flex justify-between items-center">
         <button
           onClick={onBack}
@@ -125,46 +142,55 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
         {capturedImage && (
           <button
             onClick={savePhoto}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:opacity-90 transition-opacity"
+            className="bg-white text-gray-900 px-4 py-2 rounded-xl flex items-center gap-2 hover:opacity-90 transition-opacity"
           >
             <Download className="w-5 h-5" />
-            Save Photo
+            {`Save Photo`}
           </button>
         )}
       </div>
 
-      <div className="flex-1 relative">
+      <div className="flex-1 relative overflow-hidden">
         {!capturedImage ? (
           <>
             <video
               ref={videoRef}
               autoPlay
               playsInline
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover min-h-[93vh]"
             />
+
             {/* Avatar previews */}
-            <div className="absolute bottom-0 left-0 right-0 flex justify-between p-4 pointer-events-none">
-              {selectedAvatars.map((avatar, index) => (
-                <div
-                  key={avatar.id}
-                  className={`w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg ${
-                    index === 0 ? 'ml-4' : 'mr-4'
-                  }`}
-                >
-                  <img
-                    src={avatar.image}
-                    alt={avatar.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+            {leftAvatar && (
+              <div
+                className="animate-image"
+                style={{
+                  position: "absolute",
+                  top: "-120px",
+                  left: "-170px",
+                  background: `url(${leftAvatar.left_image}) left center`,
+                  transform: `rotate(90deg)`
+                }}
+              />
+            )}
+
+            {rightAvatar && (
+              <div
+                className="animate-image"
+                style={{
+                  position: "absolute",
+                  bottom: "-170px",
+                  left: "-170px",
+                  background: `url(${rightAvatar.right_image}) left center`,
+                  transform: `rotate(90deg)`
+                }}
+              />
+            )}
+
             <button
               onClick={capturePhoto}
               disabled={isLoading}
-              className={`absolute bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-full p-6 shadow-lg transition-all transform hover:scale-105 ${
-                isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl'
-              }`}
+              className={`absolute bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-full p-6 shadow-lg transition-all transform hover:scale-105 ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl'}`}
             >
               <CameraIcon className="w-8 h-8" />
             </button>
@@ -174,7 +200,7 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
             <img
               src={capturedImage}
               alt="Captured selfie"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover min-h-[91vh]"
             />
             <button
               onClick={retake}

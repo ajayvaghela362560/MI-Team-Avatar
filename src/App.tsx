@@ -1,13 +1,13 @@
 import React from 'react';
 import { AvatarSelection } from './components/AvatarSelection';
 import { Camera } from './components/Camera';
-import type { Avatar } from './types';
+import type { Player } from './types';
 
 function App() {
-  const [selectedAvatars, setSelectedAvatars] = React.useState<Avatar[]>([]);
+  const [selectedAvatars, setSelectedAvatars] = React.useState<Player[]>([]);
   const [showCamera, setShowCamera] = React.useState(false);
 
-  const handleAvatarsSelected = (avatars: Avatar[]) => {
+  const handleAvatarsSelected = (avatars: Player[]) => {
     setSelectedAvatars(avatars);
     setShowCamera(true);
   };
@@ -16,13 +16,13 @@ function App() {
     setShowCamera(false);
   };
 
-  const handleCapture = (imageBlob: Blob) => {
+  const handleCapture = (imageBlob: string) => {
     // Handle the captured image if needed
     console.log('Image captured:', imageBlob);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+    <div className="min-h-screen max-w-[100vw] max-h-[100dvh] bg-gradient-to-br from-purple-50 to-pink-50">
       {showCamera ? (
         <Camera
           selectedAvatars={selectedAvatars}
