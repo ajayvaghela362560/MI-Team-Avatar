@@ -75,32 +75,26 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
           loadImage(leftAvatar?.left_image_last_frame ?? null),
           loadImage(rightAvatar?.right_image_last_frame ?? null),
         ]);
-    
-        const avatarHeight = canvas.height * 0.6;
-        const avatarWidth = avatarHeight * 0.8;
-    
-        console.log("Left Image:", leftImage);
-        console.log("Right Image:", rightImage);
-    
+
+        const avatarHeight = canvas.height * 0.8;
+        const avatarWidth = avatarHeight * 1;
+
         if (leftImage) {
           context.save();
-          context.translate(avatarHeight, 0);
+          context.translate((avatarHeight - 120), -120);
           context.rotate(90 * Math.PI / 180);
           context.drawImage(leftImage, 0, 0, avatarWidth, avatarHeight);
           context.restore();
         }
-    
+
         if (rightImage) {
           context.save();
-          // Move to the bottom-left corner
-          context.translate(avatarWidth, canvas.height);
-          // Rotate -90 degrees
-          context.rotate(-90 * Math.PI / 180);
-          // Draw the image at (0, -avatarHeight) so it aligns correctly
-          context.drawImage(rightImage, 0, -avatarHeight, avatarWidth, avatarHeight);
+          context.translate((avatarHeight - 120), 120);
+          context.rotate(90 * Math.PI / 180);
+          context.drawImage(rightImage, (canvas.height - avatarWidth), 0, avatarWidth, avatarHeight);
           context.restore();
-        } 
-    
+        }
+
         // Save the final image
         const finalImage = canvas.toDataURL("image/jpeg");
         setCapturedImage(finalImage);
@@ -139,15 +133,6 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
           <ArrowLeft className="w-6 h-6" />
           Back
         </button>
-        {capturedImage && (
-          <button
-            onClick={savePhoto}
-            className="bg-white text-gray-900 px-4 py-2 rounded-xl flex items-center gap-2 hover:opacity-90 transition-opacity"
-          >
-            <Download className="w-5 h-5" />
-            {`Save Photo`}
-          </button>
-        )}
       </div>
 
       <div className="flex-1 relative overflow-hidden">
@@ -197,17 +182,29 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
           </>
         ) : (
           <>
-            <img
-              src={capturedImage}
-              alt="Captured selfie"
-              className="w-full h-full object-cover min-h-[91vh]"
-            />
-            <button
-              onClick={retake}
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white text-gray-900 px-8 py-4 rounded-xl font-medium hover:bg-gray-100 transition-colors transform hover:scale-105"
-            >
-              Retake Photo
-            </button>
+            <div className="min-h-[91vh] flex flex-col items-center justify-center">
+              <img
+                src={capturedImage}
+                alt="Captured selfie"
+                className="aspect-1/3"
+              />
+            </div>
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+              <button
+                onClick={retake}
+                className="bg-white text-gray-900 px-4 py-2 rounded-xl font-medium hover:bg-gray-100 transition-colors transform hover:scale-105 mb-2 w-full"
+              >
+                Repose
+              </button>
+
+              <button
+                onClick={savePhoto}
+                className="bg-white text-gray-900 px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-gray-100 transition-colors transform hover:scale-105"
+              >
+                <Download className="w-5 h-5" />
+                {`Download`}
+              </button>
+            </div>
           </>
         )}
       </div>

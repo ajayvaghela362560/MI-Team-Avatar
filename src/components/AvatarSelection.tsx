@@ -22,19 +22,18 @@ export function AvatarSelection({ onAvatarsSelected }: AvatarSelectionProps) {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="flex items-center gap-3 mb-8">
-            <Cricket className="w-8 h-8 text-blue-600" />
+          <div className="flex justify-center items-center gap-3 mb-8">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
-              Choose Mumbai Indians Players
+              Pick 2 Players
             </h1>
           </div>
 
-          <p className="text-gray-600 mb-6 text-lg">
+          {/* <p className="text-gray-600 mb-6 text-lg">
             Select 2 players to appear in your selfie
             <span className="text-sm ml-2 text-blue-600">
               ({selectedAvatars.length}/2 selected)
             </span>
-          </p>
+          </p> */}
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             {players.map(avatar => (
@@ -70,7 +69,7 @@ export function AvatarSelection({ onAvatarsSelected }: AvatarSelectionProps) {
               }`}
           >
             <Cricket className="w-6 h-6" />
-            Take Selfie with MI Players
+            Take Selfie
           </button>
         </div>
       </div>
