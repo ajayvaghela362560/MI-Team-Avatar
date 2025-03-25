@@ -199,40 +199,41 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
           </>
         ) : (
           <>
-            <div className='flex flex-col items-center justify-between py-7 min-h-screen splash-screen-background-image'>
+            <div className='pb-7 min-h-screen splash-screen-background-image'>
+              <div className='demo' />
+              <div className='blur-bg flex flex-col items-center justify-between min-h-screen'>
+                <div className="px-7 py-7 flex justify-start items-center w-full">
+                  <button
+                    onClick={onBack}
+                    className="text-white flex items-center gap-2.5 text-[20px] font-medium leading-[100%] tracking-[13%] text-center uppercase cursor-pointer text-shadow"
+                  >
+                    <ChevronLeft className="w-7 h-7" />
+                    {`Back`}
+                  </button>
+                </div>
+                <div className="flex items-center justify-center h-full w-[calc(100vw-125px)]">
+                  <img
+                    src={capturedImage}
+                    alt="captured-selfie"
+                    className="h-full w-full object-contain ring-[5px] ring-white"
+                  />
+                </div>
+                <div className="flex flex-col gap-2.5 min-w-[calc(100vw-125px)]">
+                  <button
+                    onClick={retake}
+                    className="gradient-border text-[16px] font-bold leading-none tracking-normal text-center uppercase text-white py-3 transition-colors transform hover:scale-105 w-full"
+                  >
+                    {`Repose`}
+                  </button>
 
-              <div className="px-7 py-7 flex justify-start items-center w-full">
-                <button
-                  onClick={onBack}
-                  className="text-white flex items-center gap-2.5 text-[20px] font-medium leading-[100%] tracking-[13%] text-center uppercase cursor-pointer"
-                >
-                  <ChevronLeft className="w-7 h-7" />
-                  {`Back`}
-                </button>
+                  <button
+                    onClick={savePhoto}
+                    className="flex items-center justify-center py-4 px-6 leading-[100%] tracking-[0%] text-center text-[#001848] font-bold text-[16px] uppercase transition-all transform hover:scale-105 bg-gradient-to-r from-[#D8B551] to-[#F0DB9E]"
+                  >
+                    {`Download`}
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center justify-center h-full w-[calc(100vw-125px)]">
-                <img
-                  src={capturedImage}
-                  alt="captured-selfie"
-                  className="h-full w-full object-contain ring-[5px] ring-white"
-                />
-              </div>
-              <div className="flex flex-col gap-2.5 min-w-[calc(100vw-125px)]">
-                <button
-                  onClick={retake}
-                  className="gradient-border text-[16px] font-bold leading-none tracking-normal text-center uppercase text-white py-3 transition-colors transform hover:scale-105 w-full"
-                >
-                 {`Repose`}
-                </button>
-
-                <button
-                  onClick={savePhoto}
-                  className="flex items-center justify-center py-4 px-6 leading-[100%] tracking-[0%] text-center text-[#001848] font-bold text-[16px] uppercase transition-all transform hover:scale-105 bg-gradient-to-r from-[#D8B551] to-[#F0DB9E]"
-                >
-                  {`Download`}
-                </button>
-              </div>
-
             </div>
           </>
         )}
