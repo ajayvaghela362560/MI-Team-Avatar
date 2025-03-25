@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  background-color: transparent !important;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -71,3 +76,102 @@ video {
     background-position: -9472px;
   }
 } */
+
+.splash-screen-background-image {
+  background: url(../src/assets/images/splash_screen_background_image.png);
+  background-size: cover;
+}
+
+.splash-screen-title {
+  font-family: "Noir Pro";
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #FFFFFF;
+  box-shadow: 0px 1.13px 1.13px 0px #00000040;
+}
+
+.splash-screen-desc {
+  font-family: "Noir Pro";
+  font-weight: 700;
+  font-size: 58px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.splash-screen-huddle-up-text {
+  font-family: "Noir Pro";
+  font-weight: 700;
+  font-size: 33px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #FFFFFF;
+  box-shadow: 0px 0.93px 0.93px 0px #00000040;
+  margin-bottom: 5px;
+}
+
+.splash-screen-take-photo-text {
+  font-family: "Noir Pro";
+  font-weight: 500;
+  font-size: 16.76px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #FFFFFF;
+  box-shadow: 0px 0.89px 0.89px 0px #00000040;
+}
+
+.splash-screen-tap-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+}
+
+.splash-screen-tap-btn>span {
+  font-family: "Noir Pro";
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #FFFFFF80;
+}
+
+/* Start of the scrollbar style css */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #006CB7 0%, #013B7A 84.21%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FFFFFF66;
+  border-radius: 35px;
+}
+
+/* End of the scrollbar style css */
+
+.gradient-border {
+  @apply border-2 border-transparent relative;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-image-source: linear-gradient(225deg, #B79365 50%, #F8D495 59.5%, #FFFBBC 65.5%, #FFFFEC 70%, #FFFBBC 75%, #F8D495 80%, #A7855B 90%);
+  border-image-slice: 1;
+  border-radius: inherit;
+}

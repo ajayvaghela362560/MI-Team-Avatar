@@ -1,5 +1,4 @@
 import React from 'react';
-import { Ticket as Cricket } from 'lucide-react';
 import { Player } from '../types';
 import { players } from '../data/players';
 
@@ -19,59 +18,48 @@ export function AvatarSelection({ onAvatarsSelected }: AvatarSelectionProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="flex justify-center items-center gap-3 mb-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
-              Pick 2 Players
-            </h1>
-          </div>
-
-          {/* <p className="text-gray-600 mb-6 text-lg">
-            Select 2 players to appear in your selfie
-            <span className="text-sm ml-2 text-blue-600">
-              ({selectedAvatars.length}/2 selected)
-            </span>
-          </p> */}
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            {players.map(avatar => (
-              <div
-                key={avatar.id}
-                onClick={() => toggleAvatar(avatar)}
-                className={`flex flex-col items-center cursor-pointer transition-all transform hover:scale-105 ${selectedAvatars.length >= 2 && !selectedAvatars.find(a => a.id === avatar.id)
-                  ? 'opacity-50 cursor-not-allowed'
-                  : ''
-                  }`}
-              >
-                <div className={`relative w-32 h-32 rounded-full overflow-hidden mb-3 ${selectedAvatars.find(a => a.id === avatar.id)
-                  ? 'ring-4 ring-blue-500'
-                  : 'ring-2 ring-gray-200'
-                  }`}>
-                  <img
-                    src={avatar.image}
-                    alt={avatar.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <p className="text-center font-medium text-gray-800">{avatar.name}</p>
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={() => onAvatarsSelected(selectedAvatars)}
-            disabled={selectedAvatars.length !== 2}
-            className={`w-full flex items-center justify-center gap-3 rounded-xl py-4 px-6 text-white font-medium text-lg transition-all transform hover:scale-102 ${selectedAvatars.length === 2
-              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-lg'
-              : 'bg-gray-300 cursor-not-allowed'
-              }`}
-          >
-            <Cricket className="w-6 h-6" />
-            Take Selfie
-          </button>
+    <div className="min-h-screen bg-gradient-to-b from-[#006CB7] to-[#013B7A] py-5 px-7">
+      <div className="">
+        <div className="flex flex-col justify-center items-center gap-3 mb-[22px]">
+          <h3 className="text-[21px] font-extrabold leading-[100%] tracking-[5%] text-center text-white">SELECT</h3>
+          <h1 className="text-[36px] font-medium leading-[100%] tracking-[5%] text-center text-white">TWO PLAYERS</h1>
         </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          {players.map(avatar => (
+            <div
+              key={avatar.id}
+              onClick={() => toggleAvatar(avatar)}
+              className={`flex flex-col items-center cursor-pointer ${selectedAvatars.length >= 2 && !selectedAvatars.find(a => a.id === avatar.id)
+                ? 'opacity-50 cursor-not-allowed'
+                : ''
+                }`}
+            >
+              <div className={`relative w-32 h-32 mb-3 ${selectedAvatars.find(a => a.id === avatar.id)
+                ? 'ring-4 ring-blue-500'
+                : 'ring-2 ring-gray-200'
+                }`}>
+                <img
+                  src={avatar.image}
+                  alt={avatar.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <p className="text-white text-[12px] font-medium leading-[100%] tracking-[0%] text-center shadow-[0px_2.87px_2.87px_0px_rgba(0,0,0,0.25)]">{avatar.name}</p>
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={() => onAvatarsSelected(selectedAvatars)}
+          disabled={selectedAvatars.length !== 2}
+          className={`w-full flex items-center justify-center py-4 px-6 leading-[100%] tracking-[0%] text-center text-[#001848] font-bold text-[16px] uppercase transition-all transform hover:scale-105 ${selectedAvatars.length === 2
+            ? 'bg-gradient-to-r from-[#D8B551] to-[#F0DB9E]'
+            : 'bg-gray-300 cursor-not-allowed'
+            }`}
+        >
+          {`TAKE SELFiE`}
+        </button>
       </div>
     </div>
   );

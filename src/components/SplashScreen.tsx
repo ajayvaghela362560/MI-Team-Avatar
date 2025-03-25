@@ -1,7 +1,11 @@
+import { Camera } from "lucide-react";
+import MI_Logo from "../assets/mi-logo.png";
+
 type SplashScreenProps = {
     showSplashScreen: boolean;
     setShowSplashScreen: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
 export default function SplashScreen({ STATE }: { STATE: SplashScreenProps }) {
 
     const handleStartExperience = () => {
@@ -9,48 +13,44 @@ export default function SplashScreen({ STATE }: { STATE: SplashScreenProps }) {
     }
 
     return (
-        <div className="flex flex-col items-center justify-between min-h-screen bg-white py-8 px-4">
+        <div className="flex flex-col items-center justify-between min-h-screen py-8 px-4 splash-screen-background-image">
             {/* Logos section */}
-            <div className="w-full flex justify-between max-w-md mb-8">
-                <div className="bg-gray-200 w-36 h-16 flex items-center justify-center">
-                    <p className="text-gray-800 font-medium">Sponsor Logo</p>
-                </div>
-                <div className="bg-gray-200 w-36 h-16 flex items-center justify-center">
-                    <p className="text-gray-800 font-medium">MI Logo</p>
+            <div className="w-full flex items-center justify-center max-w-md my-8">
+                <div className="w-32 h-20">
+                    <img
+                        className="h-full w-full object-contain"
+                        alt="mi-logo"
+                        src={MI_Logo}
+                    />
                 </div>
             </div>
 
             {/* Main content */}
             <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md">
-                <h1 className="text-2xl font-bold text-center mb-6">POSE WITH MI STARS!</h1>
+                <h6 className="splash-screen-title">POSE WITH THE</h6>
+                <h1 className="splash-screen-desc">STARS</h1>
 
                 {/* Silhouette placeholder */}
-                <div className="bg-gray-200 w-full max-w-xs h-48 mb-12 flex items-center justify-center">
-                    <p className="text-white text-center text-sm">
-                        Silhouette of
-                        <br />
-                        image clicked
+                <div className="bg-gray-200 w-full max-w-xs h-48 my-10 flex items-center justify-center">
+                    <p className="text-black text-center text-sm">
+                        Center Image
                     </p>
                 </div>
 
-                <h2 className="text-xl font-bold text-center mb-8">
-                    HUDDLE UP
-                    <br />
-                    AND TAKE A SELFIE
-                </h2>
+                <div className="mb-8">
+                    <h1 className="splash-screen-huddle-up-text">HUDDLE UP</h1>
+                    <h6 className="splash-screen-take-photo-text">AND TAKE A PHOTO</h6>
+                </div>
 
                 {/* Start button */}
                 <button
                     onClick={handleStartExperience}
-                    className="bg-gray-200 w-full max-w-xs py-4 text-center font-bold text-gray-800 mb-6 hover:bg-gray-300 transition-colors"
+                    className="splash-screen-tap-btn"
                 >
-                    {"START EXPERIENCE"}
+                    <Camera className="text-white h-12 w-12 stroke-1" />
+                    <span>{"TAP ON SCREEN"}</span>
                 </button>
 
-                {/* Terms link */}
-                <a href="#" className="text-xs text-gray-800 hover:underline">
-                    Terms & Conditions
-                </a>
             </div>
         </div>
     )
