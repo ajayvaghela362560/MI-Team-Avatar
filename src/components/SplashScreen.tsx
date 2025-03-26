@@ -13,7 +13,7 @@ export default function SplashScreen({ STATE }: { STATE: SplashScreenProps }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen py-8 px-4 splash-screen-background-image">
+    <div className="flex flex-col items-center justify-between min-h-screen py-8 px-4 splash-screen-background-image" onClick={handleStartExperience}>
       {/* Logos section */}
       <div className="w-full flex items-center justify-center max-w-md my-8">
         <div className="w-32 h-20">
@@ -41,10 +41,7 @@ export default function SplashScreen({ STATE }: { STATE: SplashScreenProps }) {
         </div>
 
         {/* Start button */}
-        <button
-          onClick={handleStartExperience}
-          className="splash-screen-tap-btn"
-        >
+        <button className="splash-screen-tap-btn">
           <div className="h-14 w-14">
             <img
               className="h-full w-full object-contain"
