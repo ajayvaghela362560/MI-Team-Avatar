@@ -26,7 +26,12 @@ function App() {
   return (
     <div className="min-h-screen max-w-[100vw] max-h-[100dvh] bg-gradient-to-br from-purple-50 to-pink-50">
       {showSplashScreen ? (<>
-        <SplashScreen STATE={{ showSplashScreen, setShowSplashScreen }} />
+        <SplashScreen
+          STATE={{
+            showSplashScreen,
+            setShowSplashScreen
+          }}
+        />
       </>) : (<>
         {showCamera ? (
           <Camera
@@ -35,7 +40,13 @@ function App() {
             onBack={handleBack}
           />
         ) : (
-          <AvatarSelection onAvatarsSelected={handleAvatarsSelected} />
+          <AvatarSelection
+            onAvatarsSelected={handleAvatarsSelected}
+            STATE={{
+              showSplashScreen,
+              setShowSplashScreen
+            }}
+          />
         )}
       </>)}
     </div>

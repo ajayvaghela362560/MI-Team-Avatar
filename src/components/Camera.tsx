@@ -85,8 +85,8 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
     const processAvatars = async () => {
       try {
         const [leftImage, rightImage] = await Promise.all([
-          loadImage(leftAvatar?.left_image_last_frame ?? null),
-          loadImage(rightAvatar?.right_image_last_frame ?? null),
+          loadImage(leftAvatar?.left_image ?? null),
+          loadImage(rightAvatar?.right_image ?? null),
         ]);
 
         const avatarHeight = canvas.height * 0.8;
@@ -94,17 +94,18 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
 
         if (leftImage) {
           context.save();
-          context.translate((avatarHeight - 120), -120);
-          context.rotate(90 * Math.PI / 180);
+          // context.translate((avatarHeight - 120), -120);
+          // context.rotate(90 * Math.PI / 180);
           context.drawImage(leftImage, 0, 0, avatarWidth, avatarHeight);
           context.restore();
         }
 
         if (rightImage) {
           context.save();
-          context.translate((avatarHeight - 120), 120);
-          context.rotate(90 * Math.PI / 180);
-          context.drawImage(rightImage, (canvas.height - avatarWidth), 0, avatarWidth, avatarHeight);
+          // context.translate((avatarHeight - 120), 120);
+          // context.rotate(90 * Math.PI / 180);
+          // context.drawImage(rightImage, (canvas.height - avatarWidth), 0, avatarWidth, avatarHeight);
+          context.drawImage(rightImage, 0, 0, avatarWidth, avatarHeight);
           context.restore();
         }
 
@@ -160,9 +161,9 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
               />
 
               {/* Avatar previews */}
-              {leftAvatar && (
+              {/* {leftAvatar && (
                 <img
-                  src={leftAvatar.left_image_last_frame}
+                  src={leftAvatar.left_image}
                   onLoad={() => setLeftImageLoaded(true)}
                   style={{
                     position: "absolute",
@@ -175,13 +176,37 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
 
               {rightAvatar && (
                 <img
-                  src={rightAvatar.right_image_last_frame}
+                  src={rightAvatar.right_image}
                   onLoad={() => setRightImageLoaded(true)}
                   style={{
                     position: "absolute",
                     bottom: "-60px",
                     left: "-90px",
                     transform: `rotate(90deg)`
+                  }}
+                />
+              )} */}
+
+              {leftAvatar && (
+                <img
+                  src={leftAvatar.left_image}
+                  onLoad={() => setLeftImageLoaded(true)}
+                  style={{
+                    position: "absolute",
+                    bottom: "0px",
+                    left: "-135px",
+                  }}
+                />
+              )}
+
+              {rightAvatar && (
+                <img
+                  src={rightAvatar.right_image}
+                  onLoad={() => setRightImageLoaded(true)}
+                  style={{
+                    position: "absolute",
+                    bottom: "0px",
+                    right: "-135px",
                   }}
                 />
               )}

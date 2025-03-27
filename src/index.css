@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Noir Pro';
+  src: url('../src/assets/font/NoirPro-Medium.otf') format('opentype');
+}
+
 html,
 body {
   background-color: transparent !important;
@@ -9,7 +14,7 @@ body {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Noir Pro', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -36,49 +41,8 @@ video {
   animation: pulse 2s infinite;
 }
 
-/* for 1024px images */
-/* .animate-image {
-  width: 1024px;
-  height: 1024px;
-  animation: play 1.5s steps(37) forwards;
-  transform: scale(.5);
-}
-
-@keyframes play {
-  100% {
-    background-position: -37888px;
-  }
-} */
-
-/* for 521px images */
-.animate-image {
-  width: 512px;
-  height: 512px;
-  animation: play 1.5s steps(37) forwards;
-}
-
-@keyframes play {
-  100% {
-    background-position: -18944px;
-  }
-}
-
-/* for 256px images */
-/* .animate-image {
-  width: 256px;
-  height: 256px;
-  animation: play 1.5s steps(37) forwards;
-  transform: scale(0.9);
-}
-
-@keyframes play {
-  100% {
-    background-position: -9472px;
-  }
-} */
-
 .splash-screen-background-image {
-  background: url(../src/assets/images/splash_screen_background_image.png);
+  background: url(../src/assets/images/Splash_Screen/splash_screen_background_image.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -108,7 +72,7 @@ video {
 .splash-screen-huddle-up-text {
   font-family: "Noir Pro";
   font-weight: 700;
-  font-size: 33px;
+  font-size: 35.47px;
   line-height: 100%;
   letter-spacing: 0%;
   text-align: center;
@@ -120,12 +84,13 @@ video {
 .splash-screen-take-photo-text {
   font-family: "Noir Pro";
   font-weight: 500;
-  font-size: 16.76px;
+  font-size: 20.69px;
   line-height: 100%;
   letter-spacing: 0%;
   text-align: center;
   color: #FFFFFF;
-  text-shadow: 0px 0.89px 0.89px 0px #00000040;
+  text-shadow: -1.48px 1.48px #003B7A;
+
 }
 
 .splash-screen-tap-btn {
@@ -133,17 +98,16 @@ video {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 11px;
-}
-
-.splash-screen-tap-btn>span {
+  background: linear-gradient(94.69deg, #D8B551 0%, #F0DB9E 100%, #D8B551 100%);
   font-family: "Noir Pro";
-  font-weight: 400;
-  font-size: 10px;
+  font-weight: 700;
+  font-size: 16px;
   line-height: 100%;
   letter-spacing: 0%;
   text-align: center;
-  color: #FFFFFF80;
+  text-transform: uppercase;
+  color: #001848;
+  padding: 13px 33px;
 }
 
 /* Start of the scrollbar style css */
@@ -193,5 +157,145 @@ video {
 }
 
 .text-shadow {
-  text-shadow: 0px 2.87px 2.87px #00000040;
+  text-shadow: -2.25px 2.25px #003B7A;
+}
+
+.player-name {
+  font-family: "Noir Pro";
+  font-weight: 500;
+  font-size: 13.5px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+/* splash screen start btn */
+.animatedButton {
+  position: relative;
+  border: none;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  animation: pulse 2s infinite alternate;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: "Noir Pro";
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  text-transform: uppercase;
+  color: #001848;
+  padding: 13px 33px;
+}
+
+.gradientBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, #D8B551 0%, #F0DB9E 100%, #D8B551 100%);
+  z-index: -2;
+  animation: gradientShift 8s infinite alternate;
+}
+
+.ripple1,
+.ripple2,
+.ripple3 {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 70px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+  z-index: -1;
+}
+
+.ripple1 {
+  animation: ripple 3s infinite linear;
+}
+
+.ripple2 {
+  animation: ripple 3s infinite linear 1s;
+}
+
+.ripple3 {
+  animation: ripple 3s infinite linear 2s;
+}
+
+.buttonText {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    left: -100px;
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animatedButton:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+.animatedButton:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+.player-selection-cancel-button {
+  @apply gradient-border;
+  font-family: "Noir Pro";
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 12.5px 28px;
+  width: 100%;
 }
