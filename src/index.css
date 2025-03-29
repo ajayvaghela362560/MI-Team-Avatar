@@ -19,10 +19,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-video {
-  transform: scaleX(-1);
-}
-
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -298,4 +294,30 @@ video {
   text-transform: uppercase;
   padding: 12.5px 28px;
   width: 100%;
+}
+
+.retake-btn {
+  font-family: "Noir Pro";
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 100%;
+  letter-spacing: 0.13rem;
+  text-align: center;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  gap: 5px;
+  text-shadow: 1.73px 1.73px #00000040;
+}
+
+.small_stars {
+  animation: zoomIn;
+  animation-duration: 0.5s;
+}
+
+.big-star {
+  animation: zoomIn;
+  animation-duration: 0.5s;
 }

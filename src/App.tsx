@@ -3,19 +3,27 @@ import { AvatarSelection } from "./components/AvatarSelection";
 import { Camera } from "./components/Camera";
 import type { Player } from "./types";
 import SplashScreen from "./components/SplashScreen";
+import "animate.css";
 
 function App() {
   const [selectedAvatars, setSelectedAvatars] = React.useState<Player[]>([]);
   const [showCamera, setShowCamera] = React.useState(false);
   const [showSplashScreen, setShowSplashScreen] = React.useState(true);
+  const [childKey, setChildKey] = React.useState(0);
 
   const handleAvatarsSelected = (avatars: Player[]) => {
     setSelectedAvatars(avatars);
     setShowCamera(true);
   };
 
-  const handleBack = () => {
+  const handleStartAgain = () => {
+    setShowSplashScreen(true);
     setShowCamera(false);
+    setChildKey((prev) => prev + 1);
+  };
+
+  const handleStart = () => {
+    setShowSplashScreen(false);
   };
 
   const handleCapture = (imageBlob: string) => {
@@ -26,26 +34,19 @@ function App() {
   return (
     <div className="min-h-screen max-w-[100vw] max-h-[100dvh] bg-gradient-to-br from-purple-50 to-pink-50">
       {showSplashScreen ? (<>
-        <SplashScreen
-          STATE={{
-            showSplashScreen,
-            setShowSplashScreen
-          }}
-        />
+        <SplashScreen handleStart={handleStart} />
       </>) : (<>
         {showCamera ? (
           <Camera
             selectedAvatars={selectedAvatars}
             onCapture={handleCapture}
-            onBack={handleBack}
+            onBack={handleStartAgain}
           />
         ) : (
           <AvatarSelection
+            key={childKey}
             onAvatarsSelected={handleAvatarsSelected}
-            STATE={{
-              showSplashScreen,
-              setShowSplashScreen
-            }}
+            onBack={handleStartAgain}
           />
         )}
       </>)}

@@ -7,11 +7,9 @@ import Glowing_Star_Image from '../assets/images/glowing_star.png';
 import "animate.css";
 
 interface AvatarSelectionProps {
+  key: number;
   onAvatarsSelected: (avatars: Player[]) => void;
-  STATE: {
-    showSplashScreen: boolean;
-    setShowSplashScreen: React.Dispatch<React.SetStateAction<boolean>>;
-  };
+  onBack: () => void;
 }
 
 interface selectPlayersTypes extends Player {
@@ -21,10 +19,11 @@ interface selectPlayersTypes extends Player {
   fadeOutImage?: boolean;
 }
 
-export function AvatarSelection({ onAvatarsSelected, STATE }: AvatarSelectionProps) {
+export function AvatarSelection({ onAvatarsSelected, onBack }: AvatarSelectionProps) {
   const [selectedAvatars, setSelectedAvatars] = React.useState<selectPlayersTypes[]>([]);
 
   const toggleAvatar = (avatar: Player) => {
+
     setSelectedAvatars((prev) => {
       const isSelected = prev.some((p) => p.id === avatar.id);
 
@@ -44,7 +43,7 @@ export function AvatarSelection({ onAvatarsSelected, STATE }: AvatarSelectionPro
               p.id === avatar.id ? { ...p, showSmallStar: false, showAlternateImage: false, fadeOutImage: false } : p
             )
           );
-        }, 1000);
+        }, 500);
 
         return prev.filter((p) => p.id !== avatar.id);
       } else {
@@ -58,7 +57,7 @@ export function AvatarSelection({ onAvatarsSelected, STATE }: AvatarSelectionPro
               p.id === avatar.id ? { ...p, showSmallStar: false, showBigStar: true } : p
             )
           );
-        }, 2000);
+        }, 1000);
 
         return [...prev, newPlayer];
       }
@@ -101,12 +100,33 @@ export function AvatarSelection({ onAvatarsSelected, STATE }: AvatarSelectionPro
 
   const backToSplashScreen = () => {
     setSelectedAvatars([]);
-    STATE.setShowSplashScreen(true);
+    onBack();
   }
 
   const handleSubmit = () => {
     onAvatarsSelected(selectedAvatars);
   };
+
+  const [isTop, setIsTop] = React.useState(true);
+  const [isBottom, setIsBottom] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+
+    setIsTop(scrollTop === 0);
+    setIsBottom(scrollTop + clientHeight >= scrollHeight - 1);
+  };
+
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      handleScroll(); // Initial check
+    }
+    return () => container?.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#006CB7_0%,#013B7A_84.21%)]">
@@ -121,19 +141,21 @@ export function AvatarSelection({ onAvatarsSelected, STATE }: AvatarSelectionPro
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 overflow-y-scroll max-h-[calc(100vh-200px)] px-5">
+      <div
+        ref={containerRef}
+        onScroll={handleScroll} 
+        className={`grid grid-cols-2 md:grid-cols-4 gap-6 overflow-y-scroll max-h-[calc(100vh-200px)] px-5 pt-4 pb-6 ${
+          isTop ? "border-t-2 border-[#FFFFFF29]" : isBottom ? "border-b-2 border-[#FFFFFF29]" : ""
+        }`}
+      >
         {players.map(avatar => {
           const selectedPlayer = selectedAvatars.find((p) => p.id === avatar.id);
           return (<div
             key={avatar.id}
             onClick={() => toggleAvatar(avatar)}
-            className={`flex flex-col items-center cursor-pointer ${selectedAvatars.length >= 2 && !selectedAvatars.find(a => a.id === avatar.id)
-              ? 'opacity-50 cursor-not-allowed'
-              : ''
-              }`}
-          >
-            <div key={avatar.id} className="relative w-[100px] h-[100px]">
-              <div className={`absolute w-[70px] h-[70px] border-4 border-white rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${selectedPlayer ? "opacity-0" : ""}`}></div>
+            className={`flex flex-col items-center cursor-pointer ${selectedAvatars.length >= 2 && !selectedAvatars.find(a => a.id === avatar.id) ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            <div key={avatar.id} className="relative w-[103px] h-[103px]">
+              <div className={`absolute w-[70px] h-[70px] border-[2.81px] border-white rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${selectedPlayer ? "opacity-0" : ""}`}></div>
 
               <div className="absolute top-1/1 left-1/1 transform -translate-x-1/1 -translate-y-1/1 cursor-pointer z-10">
                 <img
@@ -157,14 +179,14 @@ export function AvatarSelection({ onAvatarsSelected, STATE }: AvatarSelectionPro
                   <img
                     src={Galaxy_Stars_Image}
                     alt="Small Star"
-                    className="animate__animated animate__zoomIn"
+                    className="small_stars animate__animated animate__zoomIn"
                   />
                 )}
                 {selectedPlayer?.showBigStar && (
                   <img
                     src={Glowing_Star_Image}
                     alt="Big Star"
-                    className="animate__animated animate__zoomIn"
+                    className="big-star animate__animated animate__zoomIn"
                   />
                 )}
               </div>

@@ -13,6 +13,7 @@
   "dependencies": {
     "animate.css": "^4.1.1",
     "file-saver": "^2.0.5",
+    "framer-motion": "^12.6.2",
     "gsap": "^3.12.7",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.344.0",

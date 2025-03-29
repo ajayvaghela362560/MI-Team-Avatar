@@ -5,15 +5,10 @@ import Huddle_Up from "../assets/images/Splash_Screen/huddle_up_text_image.png";
 import Pose_Images from "../assets/images/Splash_Screen/splash_screen_center_image.png";
 
 type SplashScreenProps = {
-  showSplashScreen: boolean;
-  setShowSplashScreen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleStart: () => void;
 };
 
-export default function SplashScreen({ STATE }: { STATE: SplashScreenProps }) {
-  const handleStartExperience = () => {
-    STATE?.setShowSplashScreen(false);
-  };
-
+export default function SplashScreen({ handleStart }: SplashScreenProps) {
   return (
     <div className="flex flex-col items-center justify-between min-h-screen splash-screen-background-image">
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md">
@@ -61,7 +56,7 @@ export default function SplashScreen({ STATE }: { STATE: SplashScreenProps }) {
         </div>
 
         {/* Start button */}
-        <button className="animatedButton mb-14" onClick={handleStartExperience}>
+        <button className="animatedButton mb-14" onClick={() => handleStart()}>
           <div className="gradientBg"></div>
           <div className="ripple1"></div>
           <div className="ripple2"></div>
