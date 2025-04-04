@@ -1,22 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useRef, useEffect, useState } from 'react';
-import { saveAs } from 'file-saver';
 import type { CameraProps } from '../types';
 import ReadyToTakeSelfieScreen from './ReadyToTakeSelfieScreen';
-import html2canvas from 'html2canvas';
+// import html2canvas from 'html2canvas';
 import DownloadImageScreen from './DownloadImageScreen';
 
 export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const leftImageRef = useRef<HTMLImageElement>(null);
+  const rightImageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const cameraFrameRef = useRef<HTMLDivElement>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [leftImageLoaded, setLeftImageLoaded] = useState(false);
   const [rightImageLoaded, setRightImageLoaded] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isReadyScreenVisible, setIsReadyScreenVisible] = useState(true);
+  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
 
   // Extract left and right avatars
   const leftAvatar = selectedAvatars.find((avatar) => avatar.left_image);
@@ -30,9 +30,11 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
 
       if (permission.state === 'granted') {
         startCamera();
+      } else {
+        requestCameraPermission();
       }
 
-      permission.onchange = () => {
+      permission.onchange = async () => {
         console.log('Permission Changed:', permission.state);
         if (permission.state === 'granted') {
           startCamera();
@@ -45,7 +47,10 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
 
   const requestCameraPermission = async () => {
     try {
-      await navigator.mediaDevices.getUserMedia({ video: true });
+      await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' },
+        audio: false
+      });
       startCamera();
     } catch (error) {
       console.error('Camera access denied:', error);
@@ -53,6 +58,9 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
   };
 
   const startCamera = async () => {
+
+    setIsReadyScreenVisible(false);
+
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'user' },
       audio: false,
@@ -61,19 +69,13 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
     }
-    setIsReadyScreenVisible(false);
   };
 
   useEffect(() => {
-    if (!capturedImage) {
+    if (!capturedImage && isAnimationComplete) {
       checkPermission();
     }
-
-    return () => {
-      const stream = videoRef?.current?.srcObject as MediaStream;
-      stream?.getTracks().forEach(track => track.stop());
-    };
-  }, [capturedImage]);
+  }, [capturedImage, isAnimationComplete]);
 
   useEffect(() => {
     if (
@@ -85,165 +87,111 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
     }
   }, [leftImageLoaded, rightImageLoaded, leftAvatar, rightAvatar]);
 
-  // const capturePhoto = () => {
-  //   if (!videoRef.current || !canvasRef.current) return;
-  //   setIsLoading(true);
-
-  //   const video = videoRef.current;
-  //   const canvas = canvasRef.current;
-  //   const context = canvas.getContext("2d");
-  //   if (!context) return;
-
-  //   // Set canvas dimensions to match video
-  //   canvas.width = video.videoWidth;
-  //   canvas.height = video.videoHeight;
-
-  //   // Draw video frame (mirrored)
-  //   context.save();
-  //   context.scale(-1, 1);
-  //   context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-  //   context.restore();
-
-  //   // // Helper function to load an image
-  //   // const loadImage = (src: string | null): Promise<HTMLImageElement | null> => {
-  //   //   return new Promise((resolve) => {
-  //   //     if (!src) return resolve(null);
-  //   //     const img = new Image();
-  //   //     img.crossOrigin = "anonymous";
-  //   //     img.onload = () => resolve(img);
-  //   //     img.src = src;
-  //   //   });
-  //   // };
-
-  //   // const processAvatars = async () => {
-  //   //   try {
-  //   //     const [leftImage, rightImage] = await Promise.all([
-  //   //       loadImage(leftAvatar?.left_image ?? null),
-  //   //       loadImage(rightAvatar?.right_image ?? null),
-  //   //     ]);
-
-  //   //     const avatarHeight = canvas.height * 0.8;
-  //   //     const avatarWidth = avatarHeight * 1;
-
-  //   //     if (leftImage) {
-  //   //       context.save();
-  //   //       // context.translate((avatarHeight - 120), -120);
-  //   //       // context.rotate(90 * Math.PI / 180);
-  //   //       context.drawImage(leftImage, 0, 0, avatarWidth, avatarHeight);
-  //   //       context.restore();
-  //   //     }
-
-  //   //     if (rightImage) {
-  //   //       context.save();
-  //   //       // context.translate((avatarHeight - 120), 120);
-  //   //       // context.rotate(90 * Math.PI / 180);
-  //   //       // context.drawImage(rightImage, (canvas.height - avatarWidth), 0, avatarWidth, avatarHeight);
-  //   //       context.drawImage(rightImage, 0, 0, avatarWidth, avatarHeight);
-  //   //       context.restore();
-  //   //     }
-
-  //   //     // Save the final image
-  //   //     const finalImage = canvas.toDataURL("image/jpeg");
-  //   //     setCapturedImage(finalImage);
-  //   //     onCapture(finalImage);
-  //   //   } catch (error) {
-  //   //     console.error("Error processing avatars:", error);
-  //   //   } finally {
-  //   //     setIsLoading(false);
-  //   //   }
-  //   // };
-
-  //   // processAvatars();
-
-
-  //   // Helper function to load an image
-  //   const loadImage = (src: string | null): Promise<HTMLImageElement | null> => {
-  //     return new Promise((resolve) => {
-  //       if (!src) return resolve(null);
-  //       const img = new Image();
-  //       img.crossOrigin = "anonymous";
-  //       img.onload = () => resolve(img);
-  //       img.src = src;
-  //     });
-  //   };
-  //   const processAvatars = async () => {
-  //     try {
-  //       const [leftImage, rightImage] = await Promise.all([
-  //         loadImage(leftAvatar?.left_image ?? null),
-  //         loadImage(rightAvatar?.right_image ?? null),
-  //       ]);
-
-  //       const avatarHeight = canvas.height * 0.7;
-  //       const avatarWidth = avatarHeight * 1;
-
-  //       if (leftImage) {
-  //         context.save();
-  //         // Positioning at bottom-left corner
-  //         context.drawImage(leftImage, 0, canvas.height - avatarHeight, avatarWidth, avatarHeight);
-  //         context.restore();
-  //       }
-
-  //       if (rightImage) {
-  //         context.save();
-  //         // Positioning at bottom-right corner
-  //         context.drawImage(rightImage, canvas.width - avatarWidth, canvas.height - avatarHeight, avatarWidth, avatarHeight);
-  //         context.restore();
-  //       }
-
-  //       // Save the final image
-  //       const finalImage = canvas.toDataURL("image/jpeg");
-  //       setCapturedImage(finalImage);
-  //       onCapture(finalImage);
-  //     } catch (error) {
-  //       console.error("Error processing avatars:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   processAvatars();
-
-  // };
-
   const capturePhoto = async () => {
-    setIsLoading(true);
     try {
-      if (!cameraFrameRef.current) {
-        throw new Error("Camera frame reference is not available.");
+      if (!videoRef.current || !canvasRef.current) return;
+      setIsLoading(true);
+      videoRef.current.pause();
+
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      if (!context) return;
+
+      // Get video dimensions
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
+
+      // Get the visible area of the video
+      const containerRect = video.getBoundingClientRect();
+      const containerAspectRatio = containerRect.width / containerRect.height;
+      const videoAspectRatio = videoWidth / videoHeight;
+
+      let cropWidth, cropHeight, cropX, cropY;
+
+      if (videoAspectRatio > containerAspectRatio) {
+        // Video is wider than the container → crop the sides
+        cropHeight = videoHeight;
+        cropWidth = cropHeight * containerAspectRatio;
+        cropX = (videoWidth - cropWidth) / 2;
+        cropY = 0;
+      } else {
+        // Video is taller than the container → crop the top and bottom
+        cropWidth = videoWidth;
+        cropHeight = cropWidth / containerAspectRatio;
+        cropX = 0;
+        cropY = (videoHeight - cropHeight) / 2;
       }
 
-      // Generate an image from the div with a transparent background
-      const canvas = await html2canvas(cameraFrameRef.current, {
-        backgroundColor: null, // Transparent background
-        scale: 2, // Higher resolution
-      });
+      // Set canvas dimensions to match the visible video area
+      canvas.width = containerRect.width;
+      canvas.height = containerRect.height;
 
-      // Save the final image
+      // Mirror the video before drawing it on the canvas
+      context.save();
+      context.scale(-1, 1); // Flip horizontally
+      context.drawImage(
+        video,
+        cropX, cropY, cropWidth, cropHeight, // Crop the source
+        -canvas.width, 0, canvas.width, canvas.height // Mirror on canvas
+      );
+      context.restore(); // Restore default transformation
+
+      // Helper function to load an image
+      const loadImage = (src: string | null): Promise<HTMLImageElement | null> => {
+        return new Promise((resolve) => {
+          if (!src) return resolve(null);
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => resolve(img);
+          img.src = src;
+        });
+      };
+
+      const [leftImage, rightImage] = await Promise.all([
+        loadImage(leftAvatar?.left_image ?? null),
+        loadImage(rightAvatar?.right_image ?? null),
+      ]);
+
+      // Draw left avatar accurately
+      if (leftImage && leftImageRef.current) {
+        // Get dimensions of left image
+        const leftImageReference = leftImageRef.current;
+        const leftImageWidth = leftImageReference.clientWidth;
+        const leftImageHeight = leftImageReference.clientHeight;
+
+        // Calculate positions of bottom-left
+        const cutoutY = canvas.height - leftImageHeight; // Bottom position
+        const leftX = 0; // Small margin from left
+
+        // Draw cutouts at the bottom left 
+        context.drawImage(leftImage, leftX, cutoutY, leftImageWidth, leftImageHeight);
+      }
+
+      // Draw right avatar accurately
+      if (rightImage && rightImageRef.current) {
+        // Get dimensions of right image
+        const rightImageReference = rightImageRef.current;
+        const rightImageWidth = rightImageReference.clientWidth;
+        const rightImageHeight = rightImageReference.clientHeight;
+
+        // Calculate positions of bottom-right
+        const cutoutY = canvas.height - rightImageHeight; // Bottom position
+        const rightX = canvas.width - rightImageWidth - 0; // Small margin from right
+
+        // Draw cutouts at the bottom right
+        context.drawImage(rightImage, rightX, cutoutY, rightImageWidth, rightImageHeight);
+      }
+
+      // Save final image
       const finalImage = canvas.toDataURL("image/jpeg");
       setCapturedImage(finalImage);
       onCapture(finalImage);
+      stopCamera();
     } catch (error) {
-      console.error("Error capturing photo:", error);
+      console.error("Error processing avatars:", error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const savePhoto = async () => {
-    if (!imageRef.current || !canvasRef.current) return;
-
-    // Generate an image from the div with transparent background
-    const canvas = await html2canvas(imageRef.current, {
-      backgroundColor: null, // Transparent background
-      scale: 2, // Higher resolution
-    });
-    const dataUrl = canvas.toDataURL("image/png");
-
-    // Convert dataURL to Blob
-    const blob = await (await fetch(dataUrl)).blob();
-
-    if (blob) {
-      saveAs(blob, 'selfie-with-avatars.jpg');
     }
   };
 
@@ -251,17 +199,28 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
     setCapturedImage(null);
   };
 
-  return (
-    <div className="min-h-screen max-h-[100dvh] bg-black flex flex-col">
+  // Function to stop the camera
+  const stopCamera = () => {
+    const stream = videoRef?.current?.srcObject as MediaStream;
+    if (stream) {
+      stream?.getTracks().forEach(track => track.stop());
+    }
+  };
+
+  // Handle Ready to take selfie animation complete
+  const handleAnimationComplete = () => {
+    setIsAnimationComplete(true);
+  };
+
+  return (<>
+    <div className="h-full w-full bg-black flex flex-col">
       {isReadyScreenVisible ? (
-        <ReadyToTakeSelfieScreen
-          requestCameraPermission={requestCameraPermission}
-        />
+        <ReadyToTakeSelfieScreen onAnimationComplete={handleAnimationComplete} />
       ) : (<>
-        <div className={`flex-1 relative ${capturedImage ? "" : "overflow-hidden"}`}>
-          {!capturedImage ? (<>
+        {!capturedImage ? (<>
+          <div className={`selfie-background flex-1 relative ${capturedImage ? "" : "overflow-hidden"}`} >
             <div
-              className="flex items-center justify-center min-h-screen"
+              className="flex items-center justify-center h-full"
               style={{ display: isImageLoading ? "flex" : "none" }}
             >
               <div
@@ -288,83 +247,77 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
               </div>
             </div>
 
-            <div style={{ display: isImageLoading ? "none" : "unset" }}>
-              <div ref={cameraFrameRef} >
+            <div className='h-full flex flex-col justify-center items-center'>
+              <div className='relative' style={{ display: isImageLoading ? "none" : "unset" }}>
                 <video
+                  className='camara-video-frame'
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    minHeight: "100vh",
-                    transform: "scaleX(-1)",
-                  }}
                 />
 
                 {leftAvatar && (
                   <img
+                    ref={leftImageRef}
                     src={leftAvatar.left_image}
                     onLoad={() => setLeftImageLoaded(true)}
                     style={{
                       position: "absolute",
                       bottom: "0px",
-                      // left: "-135px",
-                      left: "-70px",
+                      left: "0px",
                     }}
+                    className='player-imgs'
                   />
                 )}
 
                 {rightAvatar && (
                   <img
+                    ref={rightImageRef}
                     src={rightAvatar.right_image}
                     onLoad={() => setRightImageLoaded(true)}
                     style={{
                       position: "absolute",
                       bottom: "0px",
-                      // right: "-135px",
-                      right: "-70px",
+                      right: "0px",
                     }}
+                    className='player-imgs'
                   />
                 )}
               </div>
-              <button
-                onClick={capturePhoto}
-                disabled={isLoading}
-                className={`absolute bottom-8 rotate-90 left-1/2 -translate-x-1/2 bg-white rounded-full p-1 transition-all transform hover:scale-105 ${isLoading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="80"
-                  height="80"
-                  viewBox="0 0 82 82"
-                  fill="none"
-                >
-                  <circle
-                    cx="41"
-                    cy="41"
-                    r="37.5"
-                    fill="#DFDFDF"
-                    stroke="white"
-                    strokeWidth={7}
-                  />
-                </svg>
-              </button>
             </div>
 
-          </>) : (<>
-            <DownloadImageScreen
-              retake={retake}
-              capturedImage={capturedImage}
-              savePhoto={savePhoto}
-              onBack={onBack}
-            />
-          </>)}
-        </div>
-        <canvas ref={canvasRef} className="hidden" />
+            <button
+              onClick={capturePhoto}
+              disabled={isLoading}
+              className={`absolute bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-full p-1 transition-all transform hover:scale-105 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="80"
+                height="80"
+                viewBox="0 0 82 82"
+                fill="none"
+              >
+                <circle
+                  cx="41"
+                  cy="41"
+                  r="37.5"
+                  fill="#DFDFDF"
+                  stroke="white"
+                  strokeWidth={7}
+                />
+              </svg>
+            </button>
+          </div>
+        </>) : (<>
+          <DownloadImageScreen
+            retake={retake}
+            capturedImage={capturedImage}
+            onBack={onBack}
+          />
+        </>)}
       </>)}
     </div>
-  );
+    <canvas ref={canvasRef} className="hidden" />
+  </>);
 }

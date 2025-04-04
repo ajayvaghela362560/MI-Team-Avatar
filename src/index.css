@@ -10,6 +10,8 @@
 html,
 body {
   background-color: transparent !important;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -17,6 +19,15 @@ body {
   font-family: 'Noir Pro', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.camara-video-frame {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* min-height: 100svh;
+  max-height: 100svh; */
+  transform: scaleX(-1);
 }
 
 @keyframes pulse {
@@ -38,10 +49,12 @@ body {
 }
 
 .splash-screen-background-image {
-  background: url(../src/assets/images/Splash_Screen/splash_screen_background_image.png);
+  background: url(../src/assets/svg/splash_screen_background_image-min.png);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  min-height: 100svh;
+  max-height: 100svh;
 }
 
 .splash-screen-title {
@@ -144,8 +157,8 @@ body {
 
 .demo {
   content: '';
-  width: 100%;
-  height: 100%;
+  width: 100svw;
+  height: 100svh;
   background-color: #006CB7;
   position: absolute;
   z-index: 999;
@@ -292,7 +305,7 @@ body {
   letter-spacing: 0%;
   text-align: center;
   text-transform: uppercase;
-  padding: 12.5px 28px;
+  padding: 1rem 1.5rem;
   width: 100%;
 }
 
@@ -320,4 +333,43 @@ body {
 .big-star {
   animation: zoomIn;
   animation-duration: 0.5s;
+}
+
+.player-selection-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 105px;
+  z-index: 99;
+  background-color: #0164AE;
+}
+
+.player-selection-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  background-color: #013B7A;
+  z-index: 99;
+}
+
+.player-selection-body {
+  /* max-height: calc(100% - 200px); */
+  max-height: 100%;
+  box-sizing: border-box;
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+.selfie-background {
+  background: url(../src/assets/svg/splash_screen_background_image-min.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.player-imgs {
+  max-width: 40vw;
 }
