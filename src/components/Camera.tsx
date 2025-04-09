@@ -4,6 +4,8 @@ import type { CameraProps } from '../types';
 import ReadyToTakeSelfieScreen from './ReadyToTakeSelfieScreen';
 // import html2canvas from 'html2canvas';
 import DownloadImageScreen from './DownloadImageScreen';
+import CameraIcon from '../assets/svg/image_capture_icon.svg';
+
 
 export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -17,6 +19,7 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isReadyScreenVisible, setIsReadyScreenVisible] = useState(true);
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+  const [isCameraVideoShow, setIsCameraVideoShow] = useState(false);
 
   // Extract left and right avatars
   const leftAvatar = selectedAvatars.find((avatar) => avatar.left_image);
@@ -68,6 +71,7 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
 
     if (videoRef.current) {
       videoRef.current.srcObject = stream;
+      setIsCameraVideoShow(true);
     }
   };
 
@@ -83,9 +87,11 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
       (leftAvatar && leftImageLoaded) ||
       (rightAvatar && rightImageLoaded)
     ) {
-      setIsImageLoading(false);
+      if (isCameraVideoShow) {
+        setIsImageLoading(false);
+      }
     }
-  }, [leftImageLoaded, rightImageLoaded, leftAvatar, rightAvatar]);
+  }, [leftImageLoaded, rightImageLoaded, leftAvatar, rightAvatar, isCameraVideoShow]);
 
   const capturePhoto = async () => {
     try {
@@ -204,6 +210,7 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
     const stream = videoRef?.current?.srcObject as MediaStream;
     if (stream) {
       stream?.getTracks().forEach(track => track.stop());
+      setIsCameraVideoShow(false);
     }
   };
 
@@ -263,8 +270,8 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
                     onLoad={() => setLeftImageLoaded(true)}
                     style={{
                       position: "absolute",
-                      bottom: "0px",
-                      left: "0px",
+                      bottom: "5px",
+                      left: "5px",
                     }}
                     className='player-imgs'
                   />
@@ -277,8 +284,8 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
                     onLoad={() => setRightImageLoaded(true)}
                     style={{
                       position: "absolute",
-                      bottom: "0px",
-                      right: "0px",
+                      bottom: "5px",
+                      right: "5px",
                     }}
                     className='player-imgs'
                   />
@@ -289,25 +296,18 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
             <button
               onClick={capturePhoto}
               disabled={isLoading}
-              className={`absolute bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-full p-1 transition-all transform hover:scale-105 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`absolute bottom-4 left-1/2 -translate-x-1/2 bg-transparent transition-all transform hover:scale-105 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="80"
-                height="80"
-                viewBox="0 0 82 82"
-                fill="none"
-              >
-                <circle
-                  cx="41"
-                  cy="41"
-                  r="37.5"
-                  fill="#DFDFDF"
-                  stroke="white"
-                  strokeWidth={7}
+              <div className='h-20 w-20'>
+                <img
+                  src={CameraIcon}
+                  alt="camera-button"
+                  className='h-full w-full object-contain'
+                  loading="lazy"
                 />
-              </svg>
+              </div>
             </button>
+
           </div>
         </>) : (<>
           <DownloadImageScreen

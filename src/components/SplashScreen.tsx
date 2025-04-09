@@ -2,7 +2,7 @@ import MI_Logo from "../assets/svg/mi-logo.png";
 import Play_Like_Mumbai from "../assets/svg/play_like_mumbai.png";
 import Paltan_Pix from "../assets/svg/paltan_pix.png";
 import Huddle_Up from "../assets/svg/huddle_up_text_image.png";
-import Pose_Images from "../assets/svg/splash_screen_center_image.svg";
+import Pose_Images from "../assets/images/Splash_Screen/splash_screen_center_image.png";
 
 type SplashScreenProps = {
   handleStart: () => void;
@@ -41,9 +41,9 @@ export default function SplashScreen({ handleStart }: SplashScreenProps) {
       </div>
 
       {/* Splash Screen Center Image */}
-      <div className="w-full flex items-center justify-center h-[calc(40svh)]">
+      <div className="w-full flex justify-center items-center h-[calc(40svh)] my-5">
         <img
-          className="h-full w-full object-contain"
+          className="h-full w-auto object-contain shadow-[0px_4.84px_96.71px_0px_#FFFFFF66] rotate-[6.87deg]"
           alt="pose-image"
           src={Pose_Images}
           loading="lazy"

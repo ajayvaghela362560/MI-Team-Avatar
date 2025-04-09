@@ -4,6 +4,7 @@ import { players } from '../data/players';
 import Player_Selection_Header_Image from '../assets/svg/player_selection_header_img.png';
 import Galaxy_Stars_Image from '../assets/images/galaxy_star_effect.png';
 import Glowing_Star_Image from '../assets/images/glowing_star.png';
+import White_Circle_Background_Image from '../assets/images/white_circle_background.png';
 import "animate.css";
 
 interface AvatarSelectionProps {
@@ -18,50 +19,63 @@ interface selectPlayersTypes extends Player {
   showAlternateImage?: boolean;
   fadeOutImage?: boolean;
   timeoutId?: NodeJS.Timeout | null;
+  bigStarFadeOut?: boolean;
+  deselecting?: boolean;
+  deselectTimeoutId?: NodeJS.Timeout[];
 }
 
 export function AvatarSelection({ onAvatarsSelected, onBack }: AvatarSelectionProps) {
   const [selectedAvatars, setSelectedAvatars] = React.useState<selectPlayersTypes[]>([]);
 
   const toggleAvatar = (avatar: Player) => {
-
     setSelectedAvatars((prev) => {
       const isSelected = prev.some((p) => p.id === avatar.id);
-    
+
       if (isSelected) {
-        // Reverse animation on deselection
-        setSelectedAvatars((prevState) =>
-          prevState.map((p) =>
-            p.id === avatar.id
-              ? {
-                  ...p,
-                  showBigStar: false,
-                  showSmallStar: true,
-                  fadeOutImage: true,
-                }
-              : p
-          )
-        );
-    
-        setTimeout(() => {
+        const existingPlayer = selectedAvatars.find(p => p.id === avatar.id);
+
+        if (existingPlayer?.deselectTimeoutId?.length) {
+          existingPlayer.deselectTimeoutId.forEach(timeoutId => clearTimeout(timeoutId));
+        }
+
+        const timeout1 = setTimeout(() => {
           setSelectedAvatars((prevState) =>
             prevState.map((p) =>
               p.id === avatar.id
                 ? {
-                    ...p,
-                    showSmallStar: false,
-                    showAlternateImage: false,
-                    fadeOutImage: false,
-                  }
+                  ...p,
+                  showBigStar: false,
+                  bigStarFadeOut: false,
+                  showAlternateImage: false,
+                  deselecting: true,
+                }
                 : p
             )
           );
         }, 500);
-    
-        return prev.filter((p) => p.id !== avatar.id);
+
+        const timeout2 = setTimeout(() => {
+          setSelectedAvatars((prevState) =>
+            prevState.filter((p) => p.id !== avatar.id)
+          );
+        }, 800);
+
+        setSelectedAvatars((prevState) =>
+          prevState.map((p) =>
+            p.id === avatar.id
+              ? {
+                ...p,
+                bigStarFadeOut: true,
+                deselectTimeoutId: [timeout1, timeout2],
+              }
+              : p
+          )
+        );
+
+        return prev;
       } else {
         if (prev.length >= 2) return prev; // Prevent more than max selections
-    
+
         // Initial selection with small star but no image switch
         const newPlayer = {
           ...avatar,
@@ -71,329 +85,32 @@ export function AvatarSelection({ onAvatarsSelected, onBack }: AvatarSelectionPr
           fadeOutImage: false,
           animationTimeout: null, // Store timeout ID
         };
-    
+
         setSelectedAvatars([...prev, newPlayer]);
-    
+
         // Clear previous timeouts if player was quickly deselected/selected
         if (newPlayer.animationTimeout) {
           clearTimeout(newPlayer.animationTimeout);
         }
-    
+
         const timeoutId = setTimeout(() => {
           setSelectedAvatars((prevState) =>
             prevState.map((p) =>
               p.id === avatar.id
-                ? { 
-                    ...p, 
-                    showSmallStar: false, 
-                    showBigStar: true,
-                    showAlternateImage: true // Switch image when big star appears
-                  }
+                ? {
+                  ...p,
+                  showSmallStar: false,
+                  showBigStar: true,
+                  showAlternateImage: true // Switch image when big star appears
+                }
                 : p
             )
           );
         }, 1000);
-    
+
         return [...prev, { ...newPlayer, animationTimeout: timeoutId }];
       }
     });
-
-    // setSelectedAvatars((prev) => {
-    //   const isSelected = prev.some((p) => p.id === avatar.id);
-    
-    //   if (isSelected) {
-    //     // Find the player to get its timeoutId
-    //     const playerToDeselect = prev.find((p) => p.id === avatar.id);
-    //     if (playerToDeselect?.timeoutId) {
-    //       clearTimeout(playerToDeselect.timeoutId);
-    //     }
-    
-    //     // Reverse animation on deselection
-    //     setSelectedAvatars((prevState) =>
-    //       prevState.map((p) =>
-    //         p.id === avatar.id
-    //           ? {
-    //               ...p,
-    //               showBigStar: false,
-    //               showSmallStar: false,
-    //               fadeOutImage: true,
-    //             }
-    //           : p
-    //       )
-    //     );
-    
-    //     // Set a timeout for the final cleanup (removing the player)
-    //     const deselectTimeout = setTimeout(() => {
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.filter((p) => p.id !== avatar.id)
-    //       );
-    //     }, 500); // Match the animation duration
-    
-    //     return prev.map((p) =>
-    //       p.id === avatar.id ? { ...p, timeoutId: deselectTimeout } : p
-    //     );
-    //   } else {
-    //     if (prev.length >= 2) return prev; // Prevent more than max selections
-    
-    //     // Immediately update the player state
-    //     const newPlayer = {
-    //       ...avatar,
-    //       showSmallStar: true,
-    //       showBigStar: false,
-    //       showAlternateImage: true, // Image should change immediately
-    //       fadeOutImage: false,
-    //     };
-    
-    //     // Clear any previous timeouts to prevent unwanted behavior
-    //     prev.forEach((p) => {
-    //       if (p.timeoutId) {
-    //         clearTimeout(p.timeoutId);
-    //       }
-    //     });
-    
-    //     setSelectedAvatars([...prev, newPlayer]);
-    
-    //     // Schedule the big star animation after 1s
-    //     const timeoutId = setTimeout(() => {
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.map((p) =>
-    //           p.id === avatar.id
-    //             ? { ...p, showSmallStar: false, showBigStar: true }
-    //             : p
-    //         )
-    //       );
-    
-    //       // Switch plate image after small star disappears
-    //       const plateImageTimeout = setTimeout(() => {
-    //         setSelectedAvatars((prevState) =>
-    //           prevState.map((p) =>
-    //             p.id === avatar.id ? { ...p, showPlateImage: true } : p
-    //           )
-    //         );
-    //       }, 500);
-    
-    //       // Store the plate image timeout ID in case we need to clear it
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.map((p) =>
-    //           p.id === avatar.id ? { ...p, timeoutId: plateImageTimeout } : p
-    //         )
-    //       );
-    //     }, 1000);
-    
-    //     return [...prev, { ...newPlayer, timeoutId }];
-    //   }
-    // });
-
-    // setSelectedAvatars((prev) => {
-    //   const isSelected = prev.some((p) => p.id === avatar.id);
-    
-    //   if (isSelected) {
-    //     // Reverse animation on deselection
-    //     setSelectedAvatars((prevState) =>
-    //       prevState.map((p) =>
-    //         p.id === avatar.id
-    //           ? {
-    //               ...p,
-    //               showBigStar: false,
-    //               showSmallStar: true,
-    //               fadeOutImage: true,
-    //             }
-    //           : p
-    //       )
-    //     );
-    
-    //     setTimeout(() => {
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.map((p) =>
-    //           p.id === avatar.id
-    //             ? {
-    //                 ...p,
-    //                 showSmallStar: false,
-    //                 showAlternateImage: false,
-    //                 fadeOutImage: false,
-    //               }
-    //             : p
-    //         )
-    //       );
-    //     }, 500);
-    
-    //     return prev.filter((p) => p.id !== avatar.id);
-    //   } else {
-    //     if (prev.length >= 2) return prev; // Prevent more than max selections
-    
-    //     // Immediately update the player state
-    //     const newPlayer = {
-    //       ...avatar,
-    //       showSmallStar: true,
-    //       showBigStar: false,
-    //       showAlternateImage: true, // Image should change immediately
-    //       fadeOutImage: false,
-    //     };
-    
-    //     // Clear any previous timeouts to prevent unwanted behavior
-    //     prev.forEach((p) => {
-    //       if (p.timeoutId) {
-    //         clearTimeout(p.timeoutId);
-    //       }
-    //     });
-    
-    //     setSelectedAvatars([...prev, newPlayer]);
-    
-    //     // Schedule the big star animation after 1s
-    //     const timeoutId = setTimeout(() => {
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.map((p) =>
-    //           p.id === avatar.id
-    //             ? { ...p, showSmallStar: false, showBigStar: true }
-    //             : p
-    //         )
-    //       );
-    
-    //       // Switch plate image after small star disappears
-    //       setTimeout(() => {
-    //         setSelectedAvatars((prevState) =>
-    //           prevState.map((p) =>
-    //             p.id === avatar.id
-    //               ? { ...p, showPlateImage: true } // Update plate image here
-    //               : p
-    //           )
-    //         );
-    //       }, 500); // Adjust timing to match the animation
-    //     }, 1000);
-    
-    //     return [...prev, { ...newPlayer, timeoutId }];
-    //   }
-    // });
-
-    // setSelectedAvatars((prev) => {
-    //   const isSelected = prev.some((p) => p.id === avatar.id);
-
-    //   if (isSelected) {
-    //     // Reverse animation on deselection
-    //     setSelectedAvatars((prevState) =>
-    //       prevState.map((p) =>
-    //         p.id === avatar.id
-    //           ? {
-    //             ...p,
-    //             showBigStar: false,
-    //             showSmallStar: true,
-    //             fadeOutImage: true,
-    //           }
-    //           : p
-    //       )
-    //     );
-
-    //     setTimeout(() => {
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.map((p) =>
-    //           p.id === avatar.id
-    //             ? {
-    //               ...p,
-    //               showSmallStar: false,
-    //               showAlternateImage: false,
-    //               fadeOutImage: false,
-    //             }
-    //             : p
-    //         )
-    //       );
-    //     }, 500);
-
-    //     return prev.filter((p) => p.id !== avatar.id);
-    //   } else {
-    //     if (prev.length >= 2) return prev; // Prevent more than max selections
-
-    //     // Immediately update the player state
-    //     const newPlayer = {
-    //       ...avatar,
-    //       showSmallStar: true,
-    //       showBigStar: false,
-    //       showAlternateImage: true, // Image should change immediately
-    //       fadeOutImage: false,
-    //     };
-
-    //     // Clear any previous timeouts to prevent unwanted behavior
-    //     prev.forEach((p) => {
-    //       if (p.timeoutId) {
-    //         clearTimeout(p.timeoutId);
-    //       }
-    //     });
-
-    //     setSelectedAvatars([...prev, newPlayer]);
-
-    //     // Schedule the big star animation after 1s
-    //     const timeoutId = setTimeout(() => {
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.map((p) =>
-    //           p.id === avatar.id ? { ...p, showSmallStar: false, showBigStar: true } : p
-    //         )
-    //       );
-    //     }, 1000);
-
-    //     return [...prev, { ...newPlayer, timeoutId }];
-    //   }
-    // });
-
-    // setSelectedAvatars((prev) => {
-    //   const isSelected = prev.some((p) => p.id === avatar.id);
-
-    //   if (isSelected) {
-    //     // Reverse animation on deselection
-    //     setSelectedAvatars((prevState) =>
-    //       prevState.map((p) =>
-    //         p.id === avatar.id
-    //           ? {
-    //             ...p,
-    //             showBigStar: false,
-    //             showSmallStar: true,
-    //             fadeOutImage: true,
-    //           }
-    //           : p
-    //       )
-    //     );
-
-    //     setTimeout(() => {
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.map((p) =>
-    //           p.id === avatar.id
-    //             ? { ...p, showSmallStar: false, showAlternateImage: false, fadeOutImage: false }
-    //             : p
-    //         )
-    //       );
-    //     }, 500);
-
-    //     return prev.filter((p) => p.id !== avatar.id);
-    //   } else {
-    //     if (prev.length >= 2) return prev; // Prevent more than max selections
-
-    //     // Immediately switch the image when the small star animation starts
-    //     const newPlayer = {
-    //       ...avatar,
-    //       showSmallStar: true,
-    //       showBigStar: false,
-    //       showAlternateImage: true, // Image switches immediately when small star starts
-    //       fadeOutImage: false,
-    //       animationTimeout: null, // Store timeout ID
-    //     };
-
-    //     setSelectedAvatars([...prev, newPlayer]);
-
-    //     // Clear previous timeouts if player was quickly deselected/selected
-    //     if (newPlayer.animationTimeout) {
-    //       clearTimeout(newPlayer.animationTimeout);
-    //     }
-
-    //     const timeoutId = setTimeout(() => {
-    //       setSelectedAvatars((prevState) =>
-    //         prevState.map((p) =>
-    //           p.id === avatar.id ? { ...p, showSmallStar: false, showBigStar: true } : p
-    //         )
-    //       );
-    //     }, 1000);
-
-    //     return [...prev, { ...newPlayer, animationTimeout: timeoutId }];
-    //   }
-    // });
-
   };
 
   const backToSplashScreen = () => {
@@ -434,10 +151,6 @@ export function AvatarSelection({ onAvatarsSelected, onBack }: AvatarSelectionPr
         </div>
       </div>
 
-      {/* <div
-        ref={containerRef}
-        onScroll={handleScroll}
-        className={`grid grid-cols-2 md:grid-cols-4 gap-6 overflow-y-scroll max-h-[calc(100vh-200px)] px-10 pt-4 pb-6 ${(scrollBarPosition === "top") ? "border-t-2 border-[#FFFFFF29]" : (scrollBarPosition === "bottom") ? "border-b-2 border-[#FFFFFF29]" : ""}`}> */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
@@ -449,7 +162,14 @@ export function AvatarSelection({ onAvatarsSelected, onBack }: AvatarSelectionPr
             onClick={() => toggleAvatar(avatar)}
             className={`flex flex-col items-center cursor-pointer ${selectedAvatars.length >= 2 && !selectedAvatars.find(a => a.id === avatar.id) ? 'opacity-50 cursor-not-allowed' : ''}`}>
             <div key={avatar.id} className="relative w-[103px] h-[103px]">
-              <div className={`absolute w-[70px] h-[70px] border-[2.81px] border-white rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${selectedPlayer ? "opacity-0" : ""}`}></div>
+
+              <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${selectedPlayer ? "opacity-0" : `opacity-100`}`}>
+                <img
+                  src={White_Circle_Background_Image}
+                  alt="White Circle Background Image"
+                  className={`h-full w-auto object-contain scale-[1.5] animate__animated ${selectedPlayer?.deselecting ? "animate__zoomIn" : ""}`}
+                />
+              </div>
 
               <div className="absolute top-1/1 left-1/1 transform -translate-x-1/1 -translate-y-1/1 cursor-pointer z-10">
                 <img
@@ -480,7 +200,7 @@ export function AvatarSelection({ onAvatarsSelected, onBack }: AvatarSelectionPr
                   <img
                     src={Glowing_Star_Image}
                     alt="Big Star"
-                    className="big-star animate__animated animate__zoomIn"
+                    className={`animate__animated ${selectedPlayer?.bigStarFadeOut ? "animate__zoomOut" : "big-star animate__zoomIn"}`}
                   />
                 )}
               </div>
