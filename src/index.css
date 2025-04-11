@@ -374,3 +374,13 @@ body {
 .player-imgs {
   max-width: 40vw;
 }
+
+.start-btn-gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-image-source: linear-gradient(225deg, #B79365 50%, #F8D495 59.5%, #FFFBBC 65.5%, #FFFFEC 70%, #FFFBBC 75%, #F8D495 80%, #A7855B 90%);
+  border-image-slice: 1;
+  border-radius: inherit;
+}

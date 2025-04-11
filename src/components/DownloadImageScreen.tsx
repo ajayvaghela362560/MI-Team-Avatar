@@ -129,7 +129,7 @@ const DownloadImageScreen = ({ retake, capturedImage, onBack }: PropsTypes) => {
                         {`Download`}
                     </button>
                     <button
-                        className="gradient-border text-[16px] font-bold leading-none tracking-normal text-center uppercase text-white py-4 px-6 transition-colors transform w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="start-btn-gradient-border text-[16px] font-bold leading-none tracking-normal text-center uppercase text-white py-4 px-7 transition-colors transform w-full disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={onBack}
                         disabled={isProcessingImage}
                     >

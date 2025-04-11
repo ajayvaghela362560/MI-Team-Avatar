@@ -10,10 +10,9 @@ interface ChildComponentProps {
 
 const CaptureImageFrame = forwardRef<HTMLDivElement, ChildComponentProps>(({ base64Image }, ref) => {
 
-    return (<div ref={ref} style={{ minHeight: "66svh", minWidth: "70svw", display: "flex", flexDirection: "column", justifyContent: "space-evenly", alignItems: "center", border: "4px solid #FFFFFF", boxShadow: "0px 3.03px 60.53px 0px #FFFFFF66", borderRadius: 25, background: `url(${Capture_Frame_Background_Image})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
-
+    return (<div ref={ref} style={{ minHeight: "66svh", minWidth: "70svw", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", border: "4px solid #FFFFFF", boxShadow: "0px 3.03px 60.53px 0px #FFFFFF66", borderRadius: 25, background: `url(${Capture_Frame_Background_Image})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <div style={{ height: "100%", width: "90%" }}>
+            <div style={{ height: "100%", width: "86%" }}>
                 <img
                     src={Paltan_Pix}
                     alt="paltan-pix"
@@ -23,8 +22,8 @@ const CaptureImageFrame = forwardRef<HTMLDivElement, ChildComponentProps>(({ bas
             </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <div style={{ height: "100%", width: "74%", border: "5px solid #FFFFFF" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "15px", marginBottom:"25px" }}>
+            <div style={{ height: "100%", width: "70%", border: "5px solid #FFFFFF" }}>
                 <img
                     src={base64Image}
                     alt="capture-image-frame"
@@ -35,7 +34,7 @@ const CaptureImageFrame = forwardRef<HTMLDivElement, ChildComponentProps>(({ bas
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "3.84px", alignItems: "center", justifyContent: 'center', width: "100%" }} >
-            <div style={{ height: "52px" }}>
+            <div style={{ height: "60px" }}>
                 <img
                     src={MI_Logo}
                     alt="mi-logo"
@@ -43,7 +42,7 @@ const CaptureImageFrame = forwardRef<HTMLDivElement, ChildComponentProps>(({ bas
                     loading="lazy"
                 />
             </div>
-            <div style={{ height: "8.29px" }}>
+            <div style={{ height: "10px" }}>
                 <img
                     src={Play_Like_Mumbai}
                     alt="play-like-mumbai"

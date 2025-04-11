@@ -32,7 +32,6 @@ function App() {
   };
 
   return (
-    // <div className="min-h-[100svh] min-w-[100lvw] max-w-[100lvw] max-h-[100svh]">
     <div className="w-full h-[100svh]">
       {showSplashScreen ? (<>
         <SplashScreen handleStart={handleStart} />

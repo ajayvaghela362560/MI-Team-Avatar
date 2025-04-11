@@ -8,7 +8,7 @@ import CameraIcon from '../assets/svg/image_capture_icon.svg';
 
 
 export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const leftImageRef = useRef<HTMLImageElement>(null);
   const rightImageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -219,6 +219,23 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
     setIsAnimationComplete(true);
   };
 
+  const [spaceBelowVideo, setSpaceBelowVideo] = useState<number | null>(null);
+  const videoWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const calculateSpaceBelow = () => {
+      if (!videoWrapperRef.current) return;
+      const TOP_BOTTOM_SPACES = 32;
+      const rect = videoWrapperRef.current.getBoundingClientRect();
+      const space = (window.innerHeight - rect.bottom) - TOP_BOTTOM_SPACES;
+      setSpaceBelowVideo(space);
+    };
+
+    calculateSpaceBelow();
+    window.addEventListener("resize", calculateSpaceBelow);
+    return () => window.removeEventListener("resize", calculateSpaceBelow);
+  }, [videoRef.current]);
+
   return (<>
     <div className="h-full w-full bg-black flex flex-col">
       {isReadyScreenVisible ? (
@@ -255,7 +272,7 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
             </div>
 
             <div className='h-full flex flex-col justify-center items-center'>
-              <div className='relative' style={{ display: isImageLoading ? "none" : "unset" }}>
+              <div ref={videoWrapperRef} className='relative' style={{ display: isImageLoading ? "none" : "unset" }}>
                 <video
                   className='camara-video-frame'
                   ref={videoRef}
@@ -297,17 +314,15 @@ export function Camera({ selectedAvatars, onCapture, onBack }: CameraProps) {
               onClick={capturePhoto}
               disabled={isLoading}
               className={`absolute bottom-4 left-1/2 -translate-x-1/2 bg-transparent transition-all transform hover:scale-105 ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+              style={{ height: `${spaceBelowVideo}px`, width: "auto", maxHeight: 64, maxWidth: 64 }}
             >
-              <div className='h-20 w-20'>
-                <img
-                  src={CameraIcon}
-                  alt="camera-button"
-                  className='h-full w-full object-contain'
-                  loading="lazy"
-                />
-              </div>
+              <img
+                src={CameraIcon}
+                alt="camera-button"
+                className='h-full w-full object-contain'
+                loading="lazy"
+              />
             </button>
-
           </div>
         </>) : (<>
           <DownloadImageScreen
